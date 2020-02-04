@@ -12,16 +12,7 @@ router.post("/login", function (req, res) {
     auth
         .login(email, password)
         .then(function (result) {
-        if (result) {
-            res
-                .writeHead(200, {
-                "Set-Cookie": "token=" + result
-            })
-                .send();
-        }
-        else {
-            res.status(401).send();
-        }
+        result ? res.status(200).json({ token: result }) : res.status(401).send();
     })
         .catch(function () { return res.status(500).send(); });
 });
