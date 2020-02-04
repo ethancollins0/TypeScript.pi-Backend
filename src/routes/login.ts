@@ -14,11 +14,12 @@ router.post("/login", (req: Request, res: Response) => {
     .login(email, password)
     .then((result: any) => {
       if (result) {
+        console.log(result);
         res
           .writeHead(200, {
             "Set-Cookie": `token=${result}`
           })
-          .send();
+          .end();
       } else {
         res.status(401).send();
       }

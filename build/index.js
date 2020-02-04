@@ -13,7 +13,7 @@ var app = express_1.default();
 app.use(cookie_parser_1.default());
 app.use(body_parser_1.default.urlencoded({ extended: false }));
 app.use(body_parser_1.default.json());
-app.use(cors_1.default({ origin: "http://localhost:3000", credentials: true }));
+app.use(cors_1.default({ origin: "http://localhost:3000" }));
 app.use("/", login_1.default);
 var port = process.env.PORT || 3001;
 app.listen(port, function () {
