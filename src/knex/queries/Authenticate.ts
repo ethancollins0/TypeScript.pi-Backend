@@ -1,7 +1,7 @@
 const knex = require("../knex");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-import { Request } from "express";
+import { Request, Response, NextFunction } from "express";
 
 export class Authenticate {
   login = (email: string, password: string) => {
@@ -24,10 +24,13 @@ export class Authenticate {
 
   signup = (email: string, name: string, password: string) => {};
 
-  checkToken = (req: Request) => {
+  checkToken = (req: Request, res: Response, next: NextFunction): void => {
     const token = req.cookies.token;
-    if (!token) return false;
-    return jwt.verify(token, process.env.SECRET);
+    if (!token) {
+      res.status(401).send();
+      return;
+    }
+    jwt.verify(token, process.env.SECRET) ? next() : res.status(401).send();
   };
 
   //issues a 30 day token

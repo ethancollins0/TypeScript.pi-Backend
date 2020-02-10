@@ -3,7 +3,9 @@ exports.up = function(knex) {
     t.increments("id");
     t.string("name");
     t.string("description");
-    t.string("model");
+    t.integer("model_id")
+      .unsigned()
+      .references("pi_model_info.id");
     t.integer("user_id")
       .unsigned()
       .references("users.id");
