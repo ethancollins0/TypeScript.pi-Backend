@@ -22,11 +22,13 @@ var Authenticate = /** @class */ (function () {
             });
         };
         this.signup = function (email, name, password) { };
-        this.checkToken = function (req) {
+        this.checkToken = function (req, res, next) {
             var token = req.cookies.token;
-            if (!token)
-                return false;
-            return jwt.verify(token, process.env.SECRET);
+            if (!token) {
+                res.status(401).send();
+                return;
+            }
+            jwt.verify(token, process.env.SECRET) ? next() : res.status(401).send();
         };
         //issues a 30 day token
         this.issueToken = function (user_id) {

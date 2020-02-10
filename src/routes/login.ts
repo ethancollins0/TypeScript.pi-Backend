@@ -4,8 +4,13 @@ const auth = new Authenticate();
 
 const router = Router();
 
-router.get("/signup", (req: Request, res: Response) => {
-  res.json("smoketest");
+router.post("/signup", (req: Request, res: Response) => {
+  const { name, email, password } = req.body;
+  if (!name || !email || !password) res.status(401).send();
+
+  // add logic to create user
+
+  res.status(200).send();
 });
 
 router.post("/login", (req: Request, res: Response) => {
@@ -13,13 +18,14 @@ router.post("/login", (req: Request, res: Response) => {
   auth
     .login(email, password)
     .then((result: any) => {
+      const token = `token=${result}`;
       if (result) {
-        console.log(result);
         res
           .writeHead(200, {
-            "Set-Cookie": `token=${result}`
+            "Set-Cookie": token,
+            "Access-Control-Allow-Credentials": "true"
           })
-          .end();
+          .send();
       } else {
         res.status(401).send();
       }

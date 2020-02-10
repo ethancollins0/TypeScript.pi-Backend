@@ -4,21 +4,26 @@ var express_1 = require("express");
 var Authenticate_1 = require("../knex/queries/Authenticate");
 var auth = new Authenticate_1.Authenticate();
 var router = express_1.Router();
-router.get("/signup", function (req, res) {
-    res.json("smoketest");
+router.post("/signup", function (req, res) {
+    var _a = req.body, name = _a.name, email = _a.email, password = _a.password;
+    if (!name || !email || !password)
+        res.status(401).send();
+    // add logic to create user
+    res.status(200).send();
 });
 router.post("/login", function (req, res) {
     var _a = req.body, email = _a.email, password = _a.password;
     auth
         .login(email, password)
         .then(function (result) {
+        var token = "token=" + result;
         if (result) {
-            console.log(result);
             res
                 .writeHead(200, {
-                "Set-Cookie": "token=" + result
+                "Set-Cookie": token,
+                "Access-Control-Allow-Credentials": "true"
             })
-                .end();
+                .send();
         }
         else {
             res.status(401).send();
