@@ -21,14 +21,34 @@ var Authenticate = /** @class */ (function () {
                 return result ? _this.issueToken(res.id) : result;
             });
         };
-        this.signup = function (email, name, password) { };
+        this.signup = function (email, name, password) {
+            if (!email || !name || !password)
+                return false;
+            var hashedPass = bcrypt.hashSync(password, 10);
+            return knex("users")
+                .insert({ email: email, name: name, password: hashedPass })
+                .returning("id")
+                .then(function (id) {
+                return _this.issueToken(id);
+            })
+                .catch(function () {
+                return null;
+            });
+        };
         this.checkToken = function (req, res, next) {
             var token = req.cookies.token;
             if (!token) {
                 res.status(401).send();
                 return;
             }
-            jwt.verify(token, process.env.SECRET) ? next() : res.status(401).send();
+            jwt.verify(token, process.env.SECRET, function (err, decoded) {
+                if (err || !decoded) {
+                    res.status(401).send();
+                }
+                else {
+                    next();
+                }
+            });
         };
         //issues a 30 day token
         this.issueToken = function (user_id) {

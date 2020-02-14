@@ -22,7 +22,19 @@ export class Authenticate {
       });
   };
 
-  signup = (email: string, name: string, password: string) => {};
+  signup = (email: string, name: string, password: string) => {
+    if (!email || !name || !password) return false;
+    const hashedPass = bcrypt.hashSync(password, 10);
+    return knex("users")
+      .insert({ email, name, password: hashedPass })
+      .returning("id")
+      .then((id: number) => {
+        return this.issueToken(id);
+      })
+      .catch(() => {
+        return null;
+      });
+  };
 
   checkToken = (req: Request, res: Response, next: NextFunction): void => {
     const token = req.cookies.token;
@@ -30,7 +42,13 @@ export class Authenticate {
       res.status(401).send();
       return;
     }
-    jwt.verify(token, process.env.SECRET) ? next() : res.status(401).send();
+    jwt.verify(token, process.env.SECRET, (err: any, decoded: any) => {
+      if (err || !decoded) {
+        res.status(401).send();
+      } else {
+        next();
+      }
+    });
   };
 
   //issues a 30 day token

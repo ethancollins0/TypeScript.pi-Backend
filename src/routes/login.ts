@@ -5,10 +5,22 @@ const auth = new Authenticate();
 const router = Router();
 
 router.post("/signup", (req: Request, res: Response) => {
-  const { name, email, password } = req.body;
-  if (!name || !email || !password) res.status(401).send();
+  const { email, name, password } = req.body;
+  if (!email || !name || !password) res.status(401).send();
 
-  // add logic to create user
+  auth
+    .signup(email, name, password)
+    .then((result: any) => {
+      if (!result) res.status(401).send();
+      const token = `token=${result}`;
+      res
+        .writeHead(200, {
+          "Set-Cookie": token,
+          "Access-Control-Allow-Credentials": "true"
+        })
+        .send();
+    })
+    .catch(() => res.status(500).send);
 
   res.status(200).send();
 });
