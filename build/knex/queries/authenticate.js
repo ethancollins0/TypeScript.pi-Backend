@@ -6,6 +6,7 @@ var jwt = require("jsonwebtoken");
 var Authenticate = /** @class */ (function () {
     function Authenticate() {
         var _this = this;
+        //handles post request to '/login', returns a token on success
         this.login = function (email, password) {
             return knex("users")
                 .where({ email: email })
@@ -21,6 +22,7 @@ var Authenticate = /** @class */ (function () {
                 return result ? _this.issueToken(res.id) : result;
             });
         };
+        //handles post request to '/signup', returns user id
         this.signup = function (email, name, password) {
             if (!email || !name || !password)
                 return false;
@@ -35,6 +37,7 @@ var Authenticate = /** @class */ (function () {
                 return null;
             });
         };
+        // middleware, checks for valid token
         this.checkToken = function (req, res, next) {
             var token = req.cookies.token;
             if (!token) {
@@ -49,6 +52,10 @@ var Authenticate = /** @class */ (function () {
                     next();
                 }
             });
+        };
+        // returns decoded token or throws error
+        this.decryptToken = function (token) {
+            return jwt.verify(token, process.env.SECRET);
         };
         //issues a 30 day token
         this.issueToken = function (user_id) {
