@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 import { Request, Response, NextFunction } from "express";
 
 export class Authenticate {
+  //handles post request to '/login', returns a token on success
   login = (email: string, password: string) => {
     return knex("users")
       .where({ email })
@@ -22,6 +23,7 @@ export class Authenticate {
       });
   };
 
+  //handles post request to '/signup', returns user id
   signup = (email: string, name: string, password: string) => {
     if (!email || !name || !password) return false;
     const hashedPass = bcrypt.hashSync(password, 10);
@@ -36,6 +38,7 @@ export class Authenticate {
       });
   };
 
+  // middleware, checks for valid token
   checkToken = (req: Request, res: Response, next: NextFunction): void => {
     const token = req.cookies.token;
     if (!token) {
@@ -49,6 +52,11 @@ export class Authenticate {
         next();
       }
     });
+  };
+
+  // returns decoded token or throws error
+  decryptToken = (token: string) => {
+    return jwt.verify(token, process.env.SECRET);
   };
 
   //issues a 30 day token

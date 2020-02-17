@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 
 import login from "./routes/login";
 import users from "./routes/users";
+import systems from "./routes/systems";
 
 import { Authenticate } from "./knex/queries/Authenticate";
 const auth = new Authenticate();
@@ -19,6 +20,8 @@ app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use("/", login); // unprotected routes
 
 app.use("/users", auth.checkToken, users); //protected routes
+
+app.use("/systems", auth.checkToken, systems);
 
 app.post(
   "/validate",
