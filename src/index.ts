@@ -8,6 +8,8 @@ import users from "./routes/users";
 import systems from "./routes/systems";
 
 import { Authenticate } from "./knex/queries/Authenticate";
+import handleSockets from "./Sockets";
+
 const auth = new Authenticate();
 require("dotenv").config();
 
@@ -32,7 +34,11 @@ app.post(
 );
 
 const port: string | number = process.env.PORT || 3001;
+const server = require("http").Server(app);
+const io = require("socket.io")(server);
 
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`Listening on port ${port}...`);
 });
+
+handleSockets(io);

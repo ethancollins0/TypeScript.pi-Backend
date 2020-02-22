@@ -15,18 +15,14 @@ router.get("/", function (req, res) {
         res.status(401).send();
         return;
     }
-    try {
-        var decrypted = auth.decryptToken(token);
-        pis.get(decrypted.user_id)
-            .then(function (systems) {
-            systems
-                ? res.status(200).json({ systems: systems })
-                : res.status(404).send(); // no results
-        }).catch(function () {
-            res.status(500).send();
-        });
-    }
-    finally {
-    }
+    var decrypted = auth.decryptToken(token);
+    pis
+        .get(decrypted.user_id)
+        .then(function (systems) {
+        systems ? res.status(200).json({ systems: systems }) : res.status(404).send(); // no results
+    })
+        .catch(function () {
+        res.status(500).send();
+    });
 });
 exports.default = router;
