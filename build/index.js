@@ -11,6 +11,7 @@ var login_1 = __importDefault(require("./routes/login"));
 var users_1 = __importDefault(require("./routes/users"));
 var systems_1 = __importDefault(require("./routes/systems"));
 var Authenticate_1 = require("./knex/queries/Authenticate");
+var Sockets_1 = __importDefault(require("./Sockets"));
 var auth = new Authenticate_1.Authenticate();
 require("dotenv").config();
 var app = express_1.default();
@@ -25,6 +26,9 @@ app.post("/validate", auth.checkToken, function (req, res, next) {
     res.status(200).send();
 });
 var port = process.env.PORT || 3001;
-app.listen(port, function () {
+var server = require("http").Server(app);
+var io = require("socket.io")(server);
+server.listen(port, function () {
     console.log("Listening on port " + port + "...");
 });
+Sockets_1.default(io);

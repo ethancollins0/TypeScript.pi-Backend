@@ -12,18 +12,15 @@ router.get("/", (req: Request, res: Response) => {
     res.status(401).send();
     return;
   }
-  try {
-    const decrypted: { user_id: number} = auth.decryptToken(token)
-    pis.get(decrypted.user_id)
-      .then((systems: any) => {
-        systems
-          ? res.status(200).json({ systems })
-          : res.status(404).send() // no results
-      }).catch(() => {
-        res.status(500).send()
-      })
-  }
-  
+  const decrypted: { user_id: number } = auth.decryptToken(token);
+  pis
+    .get(decrypted.user_id)
+    .then((systems: any) => {
+      systems ? res.status(200).json({ systems }) : res.status(404).send(); // no results
+    })
+    .catch(() => {
+      res.status(500).send();
+    });
 });
 
 export default router;
